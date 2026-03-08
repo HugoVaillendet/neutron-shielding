@@ -4,10 +4,12 @@ We will start from the most basic model and grow in complexity further to match 
 
 We will use a 2 dimensional polar system for our entire simulation.
 
+Most of the numerical methods used here are inspired form the *Particle-Transport Simulation with the Monte Carlo Method* [[1]](#1)
+
 ## Monte Carlo methods
 
 Monte Carlo methods are a class of problem solving methods relying on random steps within a selected domain.
-This type of problem solving was invented by Stanisław Ulam and Nicholas Metropolis [[1]](#1)
+This type of problem solving was invented by Stanisław Ulam and Nicholas Metropolis [[2]](#2)
 
 ## Program structure
 
@@ -38,9 +40,7 @@ $$f(E) = \frac{2 e^{ab/4}}{\sqrt{\pi a^3 b}}\, e^{-E/a} \sinh\bigl(\sqrt{bE}\big
 
 ou $a$ et $b$ are intrinsic parameters of the considered source.
 
-To sample energy in for our MC simulation, we use the "R12" algorithm by Everett and Cashwell [[2]](#2).
-
-We won't into the specifics of how this algorithm works but a very good article published in 2024 goes into the how and why this algorithm work [[3]](#3).
+To sample energy in for our MC simulation, we use the "R12" algorithm by Everett and Cashwell [[3]](#3).
 
 ### boundary_check()
 
@@ -61,23 +61,29 @@ After a scatter event we sample a new direction for the neutron to go to. We sam
 
 ### sample_free_path()
 
-
+When using the Monte Carlo method we want to determine the free path, the characteristic distance before a neutron interacts with the medium it is being transported in.
 
 ### evaluate_step()
 
 ## References
+
 <a id="1">[1]</a> 
+Carter, L. L., & Cashwell, E. D. (1975).
+Particle-Transport Simulation with the Monte Carlo Method. 
+Technical Information Center, U.S. Energy Research and Development Administration (ERDA Critical Review Series), Los Alamos Scientific Laboratory.
+
+<a id="2">[2]</a> 
 Metropolis, N., & Ulam, S. (1949).
 The Monte Carlo Method. 
 Journal of the American Statistical Association, 44(247), 335–341.
 https://doi.org/10.1080/01621459.1949.10483310
 
-<a id="2">[2]</a> 
+<a id="3">[3]</a> 
 Everett, C. J. and Cashwell, E. (1972).
 Monte Carlo Sampler. 
 Tech. rep., Los Alamos Scientific Lab., N. Mex.
 
-<a id="3">[3]</a> 
+<a id="10">[10]</a> 
 Miao, J. and Jin, M. (2024).
 Understanding the Sampling Algorithm for Watt Spectrum. 
 Transactions of American Nuclear Society, Vol 130 (2024) 1005-1007
