@@ -9,9 +9,16 @@ We will use a 2 dimensional polar system for our entire simulation.
 Monte Carlo methods are a class of problem solving methods relying on random steps within a selected domain.
 This type of problem solving was invented by Stanisław Ulam and Nicholas Metropolis [[1]](#1)
 
-## Initial simualtion
+## Program structure
 
-At first we structure the code with a neutron module. We implement a new type neutron containing postions $(x, y)$, speeds $(vx, vy)$ with an SoA structure.
+The program will have a main execution program and a module in a secondary file for neutron type as well as procedures.
+
+The project is compiled using GFortran and with the following flags : `gfortran  neutron.f90 main.f90 -O3 -march=native -ffast-math -fopenmp -funroll-loops -fopt-info-vec -o main.exe`.
+
+The project takes avantage of Fortran's ability to vectorize loops and use SIMD registers as well as OpenMP parallelism. Regarding my specific architecture
+AVX-256 registers are used by the program.
+
+We implement a new type `neutron` containing postions $(x, y)$, speeds $(v_x, v_y)$ with an SoA structure.
 We also implement a `scatter_tally` array as we as `PI` as a parameter evaluated at compile time.
 
 We then implement the following procedures : 
@@ -23,12 +30,40 @@ This prevents errors in case multiple calls of this subroutine
 
 We also initialize a `seed` to allow repeatable results.
 
+### sample_energy()
+
+Neutrons radiated by a neutron source are not monoenergetic. They follow a distribution called the Watt spectrum :
+
+$$f(E) = \frac{2 e^{ab/4}}{\sqrt{\pi a^3 b}}\, e^{-E/a} \sinh\bigl(\sqrt{bE}\bigr)$$
+
+ou $a$ et $b$ are intrinsic parameters of the considered source.
+
+To sample energy in for our MC simulation, we use the "R12" algorithm by Everett and Cashwell [[2]](#2).
+
+We won't into the specifics of how this algorithm works but a very good article published in 2024 goes into the how and why this algorithm work [[3]](#3).
+
 ### boundary_check()
+
+This function is very basic and checks if a a neutron has escaped the shielding boundary and becoming a transfered neutron.
+We test the using the square like follows :
+
+$$x^2 + y^2 < R^2$$
+
+to reduce calculation costs (the sqrt function is costly for CPUs to execute).
+
+### update_energy()
+
+After a scatter event we have to update the energy after collision. We use an elsatic collision model for this.
+
 ### sample_direction()
+
+After a scatter event we sample a new direction for the neutron to go to. We sample a random angle $\theta \in [0, 2\pi]$ and then apply the new $vx$ and $vy$ components.
+
 ### sample_free_path()
+
+
+
 ### evaluate_step()
-
-
 
 ## References
 <a id="1">[1]</a> 
@@ -36,3 +71,14 @@ Metropolis, N., & Ulam, S. (1949).
 The Monte Carlo Method. 
 Journal of the American Statistical Association, 44(247), 335–341.
 https://doi.org/10.1080/01621459.1949.10483310
+
+<a id="2">[2]</a> 
+Everett, C. J. and Cashwell, E. (1972).
+Monte Carlo Sampler. 
+Tech. rep., Los Alamos Scientific Lab., N. Mex.
+
+<a id="3">[3]</a> 
+Miao, J. and Jin, M. (2024).
+Understanding the Sampling Algorithm for Watt Spectrum. 
+Transactions of American Nuclear Society, Vol 130 (2024) 1005-1007
+https://doi.org/10.48550/arXiv.2402.09454
