@@ -20,7 +20,7 @@ The project is compiled using GFortran and with the following flags : `gfortran 
 The project takes avantage of Fortran's ability to vectorize loops and use SIMD registers as well as OpenMP parallelism. Regarding my specific architecture
 AVX-256 registers are used by the program.
 
-We implement a new type `neutron` containing postions $(x, y)$, speeds $(v_x, v_y)$ with an SoA structure.
+We implement a new type `neutron` containing postions $(x, y, z)$, speeds $(v_x, v_y, v_z)$ with an SoA structure.
 We also implement a `scatter_tally` array as we as `PI` as a parameter evaluated at compile time.
 
 We then implement the following procedures : 
@@ -47,7 +47,7 @@ To sample energy in for our MC simulation, we use the "R12" algorithm by Everett
 This function is very basic and checks if a a neutron has escaped the shielding boundary and becoming a transfered neutron.
 We test the using the square like follows :
 
-$$x^2 + y^2 < R^2$$
+$$x^2 + y^2 < R^2\quad \text{and} \quad z^2 < h^2$$
 
 to reduce calculation costs (the sqrt function is costly for CPUs to execute).
 
@@ -57,7 +57,7 @@ After a scatter event we have to update the energy after collision. We use an el
 
 ### sample_direction()
 
-After a scatter event we sample a new direction for the neutron to go to. We sample a random angle $\theta \in [0, 2\pi]$ and then apply the new $vx$ and $vy$ components.
+After a scatter event we sample a new direction for the neutron to go to. We sample a random angle $\theta \in [0, 2\pi]$  as well as a $\phi \in[0, \pi]$ and then apply the new $vx$, $vy$ and $vz$ components.
 
 ### sample_free_path()
 
