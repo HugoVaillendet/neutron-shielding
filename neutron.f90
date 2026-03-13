@@ -1,16 +1,19 @@
 module neutron_module
+    use vector_module
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64         ! Allow float or double precision real
     implicit none
     real(dp), parameter :: PI = 4.0_dp * atan(1.0_dp)
 
     type :: neutron
-        !SoA structure of position and energy
-        real(dp), allocatable :: x(:), y(:), E(:)
+        !SoA structure of position, velocity and energy
+        real(dp), allocatable :: x(:), y(:), z(:), vx(:), vy(:), vz(:), E(:)
         !Tally of scatters for each neutron
         integer, allocatable :: scatter_tally(:)
+        type(vector_dp) :: fx, fy, fz
+        !real(dp), allocatable :: fx(:), fy(:), fz(:)
 
         !Unit vector of speed and mass
-        real(dp) :: vx, vy, m
+        real(dp) :: m
     contains
         !Initializes the arrays random seed.
         procedure :: init
@@ -41,19 +44,40 @@ module neutron_module
             ! Deallocates arrays if they are aleady allocated.
             if (allocated(this%x)) deallocate(this%x)
             if (allocated(this%y)) deallocate(this%y)
+            if (allocated(this%z)) deallocate(this%z)
+
+            if (allocated(this%vx)) deallocate(this%vx)
+            if (allocated(this%vy)) deallocate(this%vy)
+            if (allocated(this%vz)) deallocate(this%vz)
+
             if (allocated(this%E)) deallocate(this%E)
             if (allocated(this%scatter_tally)) deallocate(this%scatter_tally)
+            
+            call this%fx%init_vector()
+            call this%fy%init_vector()
+            call this%fz%init_vector()
+
+            !if (allocated(this%fx)) deallocate(this%fx)
+            !if (allocated(this%fy)) deallocate(this%fy)
+            !if (allocated(this%fz)) deallocate(this%fz)
 
             ! Allocates size.
-            allocate(this%x(n), this%y(n), this%E(n))
+            allocate(this%x(n), this%y(n), this%z(n), this%vx(n), this%vy(n), this%vz(n), this%E(n))
             allocate(this%scatter_tally(n))
+            !allocate(this%fx(n),this%fy(n), this%fz(n))
 
             ! Assignes all neutrons to (0, 0).
             this%x = 0.0_dp
             this%y = 0.0_dp
+            this%z = 0.0_dp
 
-            ! Fills energy array.
+            !this%fx = 0.0_dp
+            !this%fy = 0.0_dp
+            !this%fz = 0.0_dp
+
+            ! Fills energy and velocity arrays.
             do i = 1, n
+                call this%sample_direction(i)
                 this%E(i) = this%sample_energy(b, L, M)
             end do
             
@@ -62,9 +86,6 @@ module neutron_module
 
             ! Initialises a random seed.
             call random_seed(put=seed)
-
-            !Samples a random direction.
-            call this%sample_direction()
 
         end subroutine init
 
@@ -105,13 +126,13 @@ module neutron_module
             real(dp), intent(in) :: thickness
             real(dp) :: R2, thickness2
 
-            ! We test the boudnary against the sqaure of the thickness to avoid sqrt()
+            ! We test the boudnary against the square of the thickness to avoid sqrt()
             ! and reduce calculation costs.
 
             thickness2 = thickness * thickness
             R2 = this%x(i) * this%x(i) + this%y(i) * this%y(i)
 
-            if (R2 > thickness2) then
+            if (R2 > thickness2 .or. (this%z(i) * this%z(i)) > thickness2) then
                 boundary_check = .true.
                 return
             end if
@@ -120,15 +141,18 @@ module neutron_module
             return
         end function boundary_check
 
-        subroutine sample_direction(this)
+        subroutine sample_direction(this, i)
             class(neutron), intent(inout) :: this
+            integer, intent(in) :: i
 
-            real(dp) :: theta
+            real(dp) :: theta, phi
            
             ! Sample random speed unit vector.
             call random_number(theta); theta = theta * 2 * PI
-            this%vx = cos(theta)
-            this%vy = sin(theta)
+            call random_number(phi); phi = acos(1.0_dp - 2.0_dp * phi)
+            this%vx(i) = cos(theta) * sin(phi)
+            this%vy(i) = sin(theta) * sin(phi)
+            this%vz(i) = cos(phi)
             
         end subroutine sample_direction
 
@@ -176,7 +200,7 @@ module neutron_module
 
             active = .true.
 
-            call this%sample_direction()
+            call this%sample_direction(i)
 
             do while (active)
 
@@ -201,11 +225,17 @@ module neutron_module
                 end select
 
                 path = this%sample_free_path(s_t)
-                this%x(i) = this%x(i) + path * this%vx
-                this%y(i) = this%y(i) + path * this%vy
+                this%x(i) = this%x(i) + path * this%vx(i)
+                this%y(i) = this%y(i) + path * this%vy(i)
+                this%z(i) = this%z(i) + path * this%vz(i)
                 
                 if (this%boundary_check(thickness, i)) then
                     evaluate_step = 0
+                    !$omp critical
+                    call this%fx%push(this%x(i))
+                    call this%fy%push(this%y(i))
+                    call this%fz%push(this%z(i))
+                    !$omp end critical
                     return
                 end if
 
@@ -214,7 +244,7 @@ module neutron_module
                     evaluate_step = 1
                     return
                 else
-                    call this%sample_direction()
+                    call this%sample_direction(i)
                     this%scatter_tally(i) = this%scatter_tally(i) + 1
                     this%E(i) = this%update_energy(A, i)
                 end if
