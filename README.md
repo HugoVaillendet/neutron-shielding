@@ -2,7 +2,7 @@
 The goal of this project is to simulate neutron shielding of a physical medium from a punctual neutron source.
 We will start from the most basic model and grow in complexity further to match more realistic results.
 
-We will use a 2 dimensional polar system for our entire simulation.
+Our problem will be in 3 dimensions. Our source will emit in a spherical way and our shield will be a cylindrical shape.
 
 Most of the numerical methods used here are inspired form the *Particle-Transport Simulation with the Monte Carlo Method* [[1]](#1)
 
@@ -53,7 +53,12 @@ Next we set $x = -\log{\xi_1}$ and $y = -\log{\xi_2}$\
   accept and return $Lx$\
 **else**\
   reject
-  
+
+We test this sampler against the theoretical spectrum for avery large amount of neutrons and considering a U235 source:
+
+![Watt sampler vs theoretical sepctrum](/fig1.png)
+
+and we observe the sampler matches the theory perfectly.
 ### boundary_check()
 
 This function is very basic and checks if a a neutron has escaped the shielding boundary and becoming a transfered neutron.
@@ -76,6 +81,8 @@ After a scatter event we sample a new direction for the neutron to go to. We sam
 When using the Monte Carlo method we want to determine the free path, the characteristic distance before a neutron interacts with the medium it is being transported in.
 
 ### evaluate_step()
+
+## Observations
 
 ## References
 
