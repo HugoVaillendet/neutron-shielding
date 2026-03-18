@@ -42,6 +42,18 @@ ou $a$ et $b$ are intrinsic parameters of the considered source.
 
 To sample energy in for our MC simulation, we use the "R12" algorithm by Everett and Cashwell [[3]](#3).
 
+Although this algorithm is standard the original paper proved difficult to find and thus I based my implementation of a 
+recent article Miao, J. and Jin, M. [[4]](#4) explaining in details why this algorithm works and produces a Watt spectrum sampler.
+The algorithm works as follows :
+
+We define $K = 1 + ab/8$, $L = a(K + \sqrt{K^2 - 1}$ and $M = L/a - 1$.\
+Then we sample two random varaibles $(\xi_1, \xi_2) \in [0, 1]$.\
+Next we set $x = -\log{\xi_1}$ and $y = -\log{\xi_2}$\
+**if** $y - M(x + 1)^2 \leq bLx$ **then**\
+  accept and return $Lx$\
+**else**\
+  reject
+  
 ### boundary_check()
 
 This function is very basic and checks if a a neutron has escaped the shielding boundary and becoming a transfered neutron.
@@ -83,7 +95,7 @@ Everett, C. J. and Cashwell, E. (1972).
 Monte Carlo Sampler. 
 Tech. rep., Los Alamos Scientific Lab., N. Mex.
 
-<a id="10">[10]</a> 
+<a id="4">[4]</a> 
 Miao, J. and Jin, M. (2024).
 Understanding the Sampling Algorithm for Watt Spectrum. 
 Transactions of American Nuclear Society, Vol 130 (2024) 1005-1007
