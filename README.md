@@ -47,7 +47,7 @@ recent article Miao, J. and Jin, M. [[4]](#4) explaining in details why this alg
 The algorithm works as follows :
 
 We define $K = 1 + ab/8$, $L = a(K + \sqrt{K^2 - 1}$ and $M = L/a - 1$.\
-Then we sample two random varaibles $(\xi_1, \xi_2) \in [0, 1]$.\
+Then we sample two random varaibles $(\xi_1, \xi_2) \in [0, 1[$.\
 Next we set $x = -\log{\xi_1}$ and $y = -\log{\xi_2}$\
 **if** $y - M(x + 1)^2 \leq bLx$ **then**\
   accept and return $Lx$\
@@ -99,6 +99,13 @@ $$l = -\frac{1}{\Sigma_t}\ln{(\xi)}$$
 We obtain our known sampling formula.
 
 ### evaluate_step()
+
+First we sample a direction. Then while the neutron is active, we first asign it a regime depending on it's energy and set the cross secitons accordingly.
+
+Then we sample the free path, advance the neutron from path in sampled direction. Test if the neutron escpaed the box.\
+If yes we push the neutrons final positions to the `fx`, `fy` and `fz` vectors.\
+If no we test for scattering. If yes we apply elastic energy update as well as increment the `scatter_tally`.\
+Otherwise we do nothing.
 
 ## Observations
 
