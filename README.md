@@ -9,7 +9,7 @@ Most of the numerical methods used here are inspired form the *Particle-Transpor
 ## Monte Carlo methods
 
 Monte Carlo methods are a class of problem solving methods relying on random steps within a selected domain.
-This type of problem solving was invented by Stanisław Ulam and Nicholas Metropolis [[2]](#2)
+Although previous work predates this article, the modern Markov Chain Monte Carlo was published by Stanisław Ulam and Nicholas Metropolis [[2]](#2)
 
 ## Program structure
 
@@ -21,7 +21,7 @@ The project takes avantage of Fortran's ability to vectorize loops and use SIMD 
 AVX-256 registers are used by the program.
 
 We implement a new type `neutron` containing postions $(x, y, z)$, speeds $(v_x, v_y, v_z)$ with an SoA structure.
-We also implement a `scatter_tally` array as we as `PI` as a parameter evaluated at compile time.
+We also implement a `scatter_tally` array as well as `PI` as a parameter evaluated at compile time.
 
 We then implement the following procedures : 
 
@@ -58,7 +58,7 @@ We test this sampler against the theoretical spectrum for avery large amount of 
 
 ![Watt sampler vs theoretical sepctrum](/fig1.png)
 
-and we observe the sampler matches the theory perfectly.
+and we observe the sampler matches the theory perfectly and that the overwhelming majority of neutrons fall in the fast neutron category.
 ### boundary_check()
 
 This function is very basic and checks if a a neutron has escaped the shielding boundary and becoming a transfered neutron.
@@ -74,11 +74,29 @@ After a scatter event we have to update the energy after collision. We use an el
 
 ### sample_direction()
 
-After a scatter event we sample a new direction for the neutron to go to. We sample a random angle $\theta \in [0, 2\pi]$  as well as a $\phi \in[0, \pi]$ and then apply the new $vx$, $vy$ and $vz$ components.
+After a scatter event we sample a new random direction for the neutron to go to. We sample a random angle $\theta \in [0, 2\pi]$  as well as a $\phi \in[0, \pi]$ and then apply the new $vx$, $vy$ and $vz$ components.
 
 ### sample_free_path()
 
 When using the Monte Carlo method we want to determine the free path, the characteristic distance before a neutron interacts with the medium it is being transported in.
+For this we define in collision problems a quantity called the cross-seciton. It describes the probability of a given particle interacting with it's medium.
+
+From Carter and Chashwell's book we have the probability of first collision between $l$ and $l+dl$ along the flight path of the electron:
+
+$$p(l)dl = e^{-\Sigma_t l}\Sigma_tdl$$
+
+with $\Sigma_t$ the macroscopic total cross-section of the medium.
+We set $\xi$ as the Cumulative Distribution Function (CDF) along the fight path $l$ and we find:
+
+$$\xi = 1 - e^{-\Sigma_tl}$$
+
+$$l = -\frac{1}{\Sigma_t}\ln{(1-\xi)}$$
+
+and since $1-\xi$ is also uniformly distributed on $[0,1[$:
+
+$$l = -\frac{1}{\Sigma_t}\ln{(\xi)}$$
+
+We obtain our known sampling formula.
 
 ### evaluate_step()
 
@@ -90,6 +108,7 @@ When using the Monte Carlo method we want to determine the free path, the charac
 Carter, L. L., & Cashwell, E. D. (1975).
 Particle-Transport Simulation with the Monte Carlo Method. 
 Technical Information Center, U.S. Energy Research and Development Administration (ERDA Critical Review Series), Los Alamos Scientific Laboratory.
+https://mcnp.lanl.gov/pdf_files/Book_MonteCarlo_1975_Carter_ParticleTransportSimulationwiththeMonteCarloMethod.pdf
 
 <a id="2">[2]</a> 
 Metropolis, N., & Ulam, S. (1949).
