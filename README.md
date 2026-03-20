@@ -40,7 +40,7 @@ $$f(E) = \frac{2 e^{ab/4}}{\sqrt{\pi a^3 b}}\, e^{-E/a} \sinh\bigl(\sqrt{bE}\big
 
 ou $a$ et $b$ are intrinsic parameters of the considered source.
 
-To sample energy in for our MC simulation, we use the "R12" algorithm by Everett and Cashwell [[3]](#3).
+To sample energy in for our MC simulation, we use an algorithm often called R12" but in the report it's actually the R11 (for Rejection 11) algorithm by Everett and Cashwell [[3]](#3).
 
 Although this algorithm is standard the original paper proved difficult to find and thus I based my implementation of a 
 recent article Miao, J. and Jin, M. [[4]](#4) explaining in details why this algorithm works and produces a Watt spectrum sampler.
@@ -120,6 +120,7 @@ https://doi.org/10.1080/01621459.1949.10483310
 Everett, C. J. and Cashwell, E. (1972).
 Monte Carlo Sampler. 
 Tech. rep., Los Alamos Scientific Lab., N. Mex.
+https://www.osti.gov/servlets/purl/4589395-XhDPtN/
 
 <a id="4">[4]</a> 
 Miao, J. and Jin, M. (2024).
