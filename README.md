@@ -47,7 +47,7 @@ recent article Miao, J. and Jin, M. [[4]](#4) explaining in details why this alg
 The algorithm works as follows :
 
 We define $K = 1 + ab/8$, $L = a(K + \sqrt{K^2 - 1}$ and $M = L/a - 1$.\
-Then we sample two random varaibles $(\xi_1, \xi_2) \in [0, 1[$.\
+Then we sample two random variables $(\xi_1, \xi_2) \in [0, 1[$.\
 Next we set $x = -\log{\xi_1}$ and $y = -\log{\xi_2}$\
 **if** $y - M(x + 1)^2 \leq bLx$ **then**\
   accept and return $Lx$\
@@ -70,7 +70,55 @@ to reduce calculation costs (the sqrt function is costly for CPUs to execute).
 
 ### update_energy()
 
-After a scatter event we have to update the energy after collision. We use an elsatic collision model for this.
+After a scatter event we have to update the energy after collision. We use an elsatic collision model for this described in chapter 5 of [[1]](#1).
+
+In this section we use two distinct frames, center of mass frame (CM) and laboratory frame (lab). 
+CM frame is a relative frame where we consider the center of mass of the neutron and particle it collides with.
+Lab frame is the absolute frame centered around the source of the neutron (which is the punctual source for a first scatter).
+
+The method is as follows :\
+Sample two random variables $(\xi_1, \xi_2) \in [0, 1[$.\
+We then introduce a scatter angle $\mu_{CM}$ and azimuthal angle \phi :
+$$\mu_{CM} = 2\xi_1 - 1$$
+$$\phi = 2\pi\xi_1$$
+
+We then apply the known formula : 
+
+$$E_{scatter} = \frac{1}{2}\left[(1-\alpha)\mu_{CM} + (\alpha + 1)\right]$$
+
+with $\alpha = \left(\frac{A - 1}{A + 1}\right)^2$
+
+We now just have to update the neutron's energy.
+
+The next step is to calculate the new direction of the scattered neutron. In our case $\mu_{lab}$ is defined as :
+
+$$\mu_{lab} = \frac{1 + A\mu_{CM}}{\sqrt{1 + A^2 + 2A\mu_{CM}}}$$
+
+Now to find the scatterd direction of the neutron we can refer to the routine in figure 4.1 of [[1]](#1).\
+First we set $(u,v,w)$ the direcitons before scatter, which are equivalent to `vx`, `vy`, `vz`.
+Now here to avoid division by zero in the next step, we consider 2 cases :\
+**if** $0.99999 - |w|$ is positive\
+we follow what we will call `alg1`\
+**else**\
+we follow what we will call `alg2`
+
+First `alg1`, the general case :
+
+$$u' = u\mu_{lab} + \frac{\sin{\theta}}{\sqrt{1 - \mu^2}}\left[uw\cos{\theta} - v\sin{\theta}\right]$$
+
+$$v' = v\mu_{lab} + \frac{\sin{\theta}}{\sqrt{1 - \mu^2}}\left[vw\cos{\theta} + u\sin{\theta}\right]$$
+
+$$w' = w\mu_{lab} - \sin{\theta}\sqrt{1 - \mu^2}\cos{\theta}$$
+
+where $\theta = \sqrt{1 - \mu^2}$.
+
+Now `alg2` :
+
+$$u' = \sin{\theta}\sqrt{1 - \mu^2}\cos{\theta}$$
+
+$$v' = \sin{\theta}\sqrt{1 - \mu^2}\sin{\theta}$$
+
+$$w' = \mu_{lab}\\frac{w}{|w|}$$
 
 ### sample_direction()
 
