@@ -78,7 +78,7 @@ Lab frame is the absolute frame centered around the source of the neutron (which
 
 The method is as follows :\
 Sample two random variables $(\xi_1, \xi_2) \in [0, 1[$.\
-We then introduce a scatter angle $\mu_{CM}$ and azimuthal angle \phi :
+We then introduce the cosine of the scatter angle $\mu_{CM}$ and azimuthal angle \phi :
 $$\mu_{CM} = 2\xi_1 - 1$$
 $$\phi = 2\pi\xi_2$$
 
@@ -104,19 +104,17 @@ we follow what we will call `alg2`
 
 First `alg1`, the general case :
 
-$$u' = u\mu_{lab} + \frac{\sqrt{1 - \mu^2}}{\sqrt{1 - w^2}}\left[uw\cos{\phi} - v\sin{\phi}\right]$$
+$$u' = u\mu_{lab} + \frac{\sqrt{1 - \mu_{lab}^2}}{\sqrt{1 - w^2}}\left[uw\cos{\phi} - v\sin{\phi}\right]$$
 
-$$v' = v\mu_{lab} + \frac{\sqrt{1 - \mu^2}}{\sqrt{1 - w^2}}\left[vw\cos{\phi} + u\sin{\phi}\right]$$
+$$v' = v\mu_{lab} + \frac{\sqrt{1 - \mu_{lab}^2}}{\sqrt{1 - w^2}}\left[vw\cos{\phi} + u\sin{\phi}\right]$$
 
-$$w' = w\mu_{lab} - \sqrt{1 - \mu^2}\sqrt{1 - w^2}\cos{\theta}$$
-
-where $\theta = \sqrt{1 - \mu^2}$.
+$$w' = w\mu_{lab} - \sqrt{1 - \mu_{lab}^2}\sqrt{1 - w^2}\cos{\phi}$$
 
 Now `alg2` :
 
-$$u' = \sin{\theta}\sqrt{1 - \mu^2}\cos{\phi}$$
+$$u' = \sqrt{1 - \mu_{lab}^2}\cos{\phi}$$
 
-$$v' = \sin{\theta}\sqrt{1 - \mu^2}\sin{\phi}$$
+$$v' = \sqrt{1 - \mu_{lab}^2}\sin{\phi}$$
 
 $$w' = \mu_{lab}\\frac{w}{|w|}$$
 
