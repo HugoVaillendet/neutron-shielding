@@ -80,11 +80,11 @@ The method is as follows :\
 Sample two random variables $(\xi_1, \xi_2) \in [0, 1[$.\
 We then introduce a scatter angle $\mu_{CM}$ and azimuthal angle \phi :
 $$\mu_{CM} = 2\xi_1 - 1$$
-$$\phi = 2\pi\xi_1$$
+$$\phi = 2\pi\xi_2$$
 
 We then apply the known formula : 
 
-$$E_{scatter} = \frac{1}{2}\left[(1-\alpha)\mu_{CM} + (\alpha + 1)\right]$$
+$$E_{scatter} = \frac{1}{2}E\left[(1-\alpha)\mu_{CM} + (\alpha + 1)\right]$$
 
 with $\alpha = \left(\frac{A - 1}{A + 1}\right)^2$
 
@@ -104,19 +104,19 @@ we follow what we will call `alg2`
 
 First `alg1`, the general case :
 
-$$u' = u\mu_{lab} + \frac{\sin{\theta}}{\sqrt{1 - \mu^2}}\left[uw\cos{\theta} - v\sin{\theta}\right]$$
+$$u' = u\mu_{lab} + \frac{\sqrt{1 - \mu^2}}{\sqrt{1 - w^2}}\left[uw\cos{\phi} - v\sin{\phi}\right]$$
 
-$$v' = v\mu_{lab} + \frac{\sin{\theta}}{\sqrt{1 - \mu^2}}\left[vw\cos{\theta} + u\sin{\theta}\right]$$
+$$v' = v\mu_{lab} + \frac{\sqrt{1 - \mu^2}}{\sqrt{1 - w^2}}\left[vw\cos{\phi} + u\sin{\phi}\right]$$
 
-$$w' = w\mu_{lab} - \sin{\theta}\sqrt{1 - \mu^2}\cos{\theta}$$
+$$w' = w\mu_{lab} - \sqrt{1 - \mu^2}\sqrt{1 - w^2}\cos{\theta}$$
 
 where $\theta = \sqrt{1 - \mu^2}$.
 
 Now `alg2` :
 
-$$u' = \sin{\theta}\sqrt{1 - \mu^2}\cos{\theta}$$
+$$u' = \sin{\theta}\sqrt{1 - \mu^2}\cos{\phi}$$
 
-$$v' = \sin{\theta}\sqrt{1 - \mu^2}\sin{\theta}$$
+$$v' = \sin{\theta}\sqrt{1 - \mu^2}\sin{\phi}$$
 
 $$w' = \mu_{lab}\\frac{w}{|w|}$$
 
