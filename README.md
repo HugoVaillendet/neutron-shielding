@@ -74,7 +74,8 @@ After a scatter event we have to update the energy after collision. We use an el
 
 ### sample_direction()
 
-After a scatter event we sample a new random direction for the neutron to go to. We sample a random angle $\theta \in [0, 2\pi]$  as well as a $\phi \in[0, \pi]$ and then apply the new $vx$, $vy$ and $vz$ components.
+This function samples isotropicaly in spherical coordinates a random direction for the neutrons. 
+We sample a random angle $\theta \in [0, 2\pi]$  as well as a $\phi \in[0, \pi]$ and then apply the new $vx$, $vy$ and $vz$ components.
 
 ### sample_free_path()
 
