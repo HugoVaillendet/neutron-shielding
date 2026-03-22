@@ -8,7 +8,7 @@ program monte_carlo
     type(neutron) :: ntr
     integer :: nseed, n, i, transmitted, scattered, absorbed, eval
     integer, allocatable :: seed(:)
-    real(dp) :: R, mass, thickness, E_0, A_, a, b, K, L, M
+    real(dp) :: R, mass, h, E_0, A_, a, b, K, L, M
     real(dp) :: t_start, t_end
 
     real(dp) :: sigma_a(3), sigma_t(3)
@@ -19,9 +19,9 @@ program monte_carlo
     absorbed = 0
     scattered = 0
 
-    R = 10.0_dp
+    R = 20.0_dp
     mass = 1.0_dp
-    thickness = 20.0_dp
+    h = 20.0_dp
     E_0 = 2.3e6_dp
     A_ = 1.0_dp
 
@@ -46,15 +46,10 @@ program monte_carlo
 
     call ntr%init(n, b, L, M, seed)
 
-    call omp_set_num_threads(8)
-
     t_start = omp_get_wtime()
 
-    !$omp parallel do default(none) private(i, eval) &
-    !$omp shared(n, ntr, thickness, sigma_a, sigma_t, A_) &
-    !$omp reduction(+:transmitted, absorbed) schedule(dynamic)
     do i = 1, n
-        eval = ntr%evaluate_step(thickness, sigma_a, sigma_t, A_, i)
+        eval = ntr%evaluate_step(R, h, sigma_a, sigma_t, A_, i)
         select case (eval)
             case (0)
                 transmitted = transmitted + 1
@@ -62,7 +57,6 @@ program monte_carlo
                 absorbed = absorbed + 1
         end select
     end do
-    !$omp end parallel do
 
     t_end = omp_get_wtime()
 

@@ -57,23 +57,17 @@ module neutron_module
             call this%fy%init_vector()
             call this%fz%init_vector()
 
-            !if (allocated(this%fx)) deallocate(this%fx)
-            !if (allocated(this%fy)) deallocate(this%fy)
-            !if (allocated(this%fz)) deallocate(this%fz)
-
             ! Allocates size.
             allocate(this%x(n), this%y(n), this%z(n), this%vx(n), this%vy(n), this%vz(n), this%E(n))
             allocate(this%scatter_tally(n))
-            !allocate(this%fx(n),this%fy(n), this%fz(n))
+            
+            ! Initialises a random seed.
+            call random_seed(put=seed)
 
-            ! Assignes all neutrons to (0, 0).
+            ! Assignes all neutrons to (0,0).
             this%x = 0.0_dp
             this%y = 0.0_dp
             this%z = 0.0_dp
-
-            !this%fx = 0.0_dp
-            !this%fy = 0.0_dp
-            !this%fz = 0.0_dp
 
             ! Fills energy and velocity arrays.
             do i = 1, n
@@ -83,9 +77,6 @@ module neutron_module
             
             ! Set scatter tally to 0.
             this%scatter_tally = 0
-
-            ! Initialises a random seed.
-            call random_seed(put=seed)
 
         end subroutine init
 
@@ -120,19 +111,22 @@ module neutron_module
             end do
         end function sample_energy
 
-        logical function boundary_check(this, thickness, i)
+        logical function boundary_check(this, R, h, i)
             class(neutron), intent(inout) :: this
             integer, intent(in) :: i
-            real(dp), intent(in) :: thickness
-            real(dp) :: R2, thickness2
+            real(dp), intent(in) :: R, h          ! Note h is the half height here.
+            real(dp) :: xy2, z2, R2, H2
 
             ! We test the boudnary against the square of the thickness to avoid sqrt()
             ! and reduce calculation costs.
 
-            thickness2 = thickness * thickness
-            R2 = this%x(i) * this%x(i) + this%y(i) * this%y(i)
+            R2 = R * R
+            H2 = h * h
 
-            if (R2 > thickness2 .or. (this%z(i) * this%z(i)) > thickness2) then
+            xy2 = this%x(i) * this%x(i) + this%y(i) * this%y(i)
+            z2 = this%z(i) * this%z(i)
+
+            if (xy2 > R2 .or. (z2) > H2) then
                 boundary_check = .true.
                 return
             end if
@@ -175,32 +169,56 @@ module neutron_module
             real(dp), intent(in) :: A 
             integer, intent(in) :: i
             
-            real(dp) :: xi, alpha, r
+            real(dp) :: u, v, w
+            real(dp) :: mu_cm, mu_lab, phi, alpha, E_scatter, C_1, C_2
+            real(dp) :: xi1, xi2
+
+            u = this%vx(i)
+            v = this%vy(i)
+            w = this%vz(i)
             
             alpha = ((A - 1) / (A + 1)) * ((A - 1) / (A + 1))
 
-            call random_number(xi)
-            xi = max(xi, tiny(1.0_dp))
+            call random_number(xi1)
+            call random_number(xi2)
+            xi1 = max(xi1, tiny(1.0_dp))
+            xi2 = max(xi2, tiny(1.0_dp))
+
+            mu_cm = 2.0_dp * xi1 - 1.0_dp
+            phi = 2.0_dp * PI * xi2
 
             ! We update the neutron energy upon scatter.
-            r = alpha + (1.0_dp - alpha) * xi
+            E_scatter = 0.5_dp * this%E(i) * ((1.0_dp - alpha) * mu_cm + alpha + 1.0_dp)
+
+            mu_lab = (1.0_dp + A * mu_cm) / sqrt(1.0_dp + A * A + 2.0_dp * A * mu_cm)
+
+            C_1 = sqrt(1 - mu_lab * mu_lab)
+            C_2 = sqrt(1 - w * w)
             
-            update_energy = r * this%E(i)
+            if ((0.9999_dp - abs(w)) > 0 ) then
+                this%vx(i) = u * mu_lab + (C_1/C_2) * (u * w * cos(phi) - v * sin(phi))
+                this%vy(i) = v * mu_lab + (C_1/C_2) * (v * w * cos(phi) + u * sin(phi))
+                this%vz(i) = w * mu_lab - (C_1 * C_2) * cos(phi)
+            else
+                this%vx(i) = C_1 * cos(phi)
+                this%vy(i) = C_1 * sin(phi)
+                this%vz(i) = mu_lab * (w / abs(w))
+            end if
+        
+            update_energy = E_scatter
             
         end function update_energy
 
-        integer function evaluate_step(this, thickness, sigma_a, sigma_t, A, i)
+        integer function evaluate_step(this, R, h, sigma_a, sigma_t, A, i)
             class(neutron), intent(inout) :: this
             integer, intent(in) :: i
-            real(dp), intent(in) :: thickness, A, sigma_a(3), sigma_t(3)
+            real(dp), intent(in) :: R, h, A, sigma_a(3), sigma_t(3)
 
             logical :: active
             real(dp) :: p, path, s_a, s_t
             integer :: regime
 
             active = .true.
-
-            call this%sample_direction(i)
 
             do while (active)
 
@@ -229,7 +247,7 @@ module neutron_module
                 this%y(i) = this%y(i) + path * this%vy(i)
                 this%z(i) = this%z(i) + path * this%vz(i)
                 
-                if (this%boundary_check(thickness, i)) then
+                if (this%boundary_check(R, h, i)) then
                     evaluate_step = 0
                     !$omp critical
                     call this%fx%push(this%x(i))
@@ -244,7 +262,6 @@ module neutron_module
                     evaluate_step = 1
                     return
                 else
-                    call this%sample_direction(i)
                     this%scatter_tally(i) = this%scatter_tally(i) + 1
                     this%E(i) = this%update_energy(A, i)
                 end if
