@@ -15,13 +15,13 @@ Although previous work predates this article, the modern Markov Chain Monte Carl
 
 The program will have a main execution program and a module in a secondary file for neutron type as well as procedures.
 
-The project is compiled using GFortran and with the following flags : `gfortran  neutron.f90 main.f90 -O3 -march=native -ffast-math -fopenmp -funroll-loops -fopt-info-vec -o main.exe`.
+The project is compiled using GFortran and with the following flags : `gfortran  neutron.f90 main.f90 -O3 -march=native -ffast-math -funroll-loops -fopt-info-vec -o main.exe`.
 
-The project takes avantage of Fortran's ability to vectorize loops and use SIMD registers as well as OpenMP parallelism. Regarding my specific architecture
+The project takes avantage of Fortran's ability to vectorize loops and use SIMD registers. Regarding my specific architecture
 AVX-256 registers are used by the program.
 
 We implement a new type `neutron` containing postions $(x, y, z)$, speeds $(v_x, v_y, v_z)$ with an SoA structure.
-We also implement a `scatter_tally` array as well as `PI` as a parameter evaluated at compile time.
+We also implement a `scatter_tally` array as well as a `PI` parameter evaluated at compile time.
 
 We then implement the following procedures : 
 
@@ -154,7 +154,24 @@ If yes we push the neutrons final positions to the `fx`, `fy` and `fz` vectors.\
 If no we test for scattering. If yes we apply elastic energy update as well as increment the `scatter_tally`.\
 Otherwise we do nothing.
 
-## Observations
+## Results
+
+We simulate a U-235 fission source emitting isotropically $10^6$ neutrons. Everywhere around the source is a cylinder of light water of radius $R = 20$ and height $H = 40$.
+Our raw numerical results are the following :
+
+- Final transmission rate : $T = 12.339099999999998%$
+- Final absorbtion rate : $A = 87.660899999999998%$
+- Scattering events tally : $S = 60215158$
+
+The simulation took $5.2509999275207520s$.
+
+### Scatter distribution
+
+We obtain the following distribution of scatters :
+
+![Scatter distribution](/fig2.png)
+
+We observe an exponential distribution with a mean at $\langle n\rangle = 60.22$ and median $n_m = 47.00$. This means that $50%$ of the neutrons experience $47$ or less scattering event before being either abosrbed or exitting.
 
 ## References
 
