@@ -159,8 +159,8 @@ Otherwise we do nothing.
 We simulate a U-235 fission source emitting isotropically $10^6$ neutrons. Everywhere around the source is a cylinder of light water of radius $R = 20$ and height $H = 40$.
 Our raw numerical results are the following :
 
-- Final transmission rate : $T = 12.339099999999998%$
-- Final absorbtion rate : $A = 87.660899999999998%$
+- Final transmission rate : $T = 12.339099999999998\%$
+- Final absorbtion rate : $A = 87.660899999999998\%$
 - Scattering events tally : $S = 60215158$
 
 The simulation took $5.2509999275207520s$.
@@ -171,7 +171,13 @@ We obtain the following distribution of scatters :
 
 ![Scatter distribution](/fig2.png)
 
-We observe an exponential distribution with a mean at $\langle n\rangle = 60.22$ and median $n_m = 47.00$. This means that $50%$ of the neutrons experience $47$ or less scattering event before being either abosrbed or exitting.
+We observe an exponential distribution with a mean at $\langle n\rangle = 60.22$ and median $n_m = 47.00$. This means that $50\%$ of the neutrons experience $47$ or less scattering event before being either abosrbed or exitting.
+
+For our simulated U235 neutron source water behaves like a neutron shield, abosrbing most of the neutrons emited with a transimission rate around $T=12.33\%$ and a volume $V\approx2500m^3$. 
+Water thus requires important volumes of water to shield effectively and reduce doses. 
+Despite it's rather weak shielding per meter, water is an extremely available neutron moderator and is a very effective heat carrying fluid.
+
+This explains the use of light water in nuclear power production and waste managment plants.
 
 ## References
 
