@@ -173,9 +173,9 @@ We obtain the following distribution of scatters :
 
 We observe an exponential distribution with a mean at $\langle n\rangle = 60.22$ and median $n_m = 47.00$. This means that $50\%$ of the neutrons experience $47$ or less scattering event before being either abosrbed or exitting.
 
-For our simulated U235 neutron source water behaves like a neutron shield, abosrbing most of the neutrons emited with a transimission rate around $T=12.33\%$ and a volume $V\approx2500m^3$. 
-Water thus requires important volumes of water to shield effectively and reduce doses. 
-Despite it's rather weak shielding per meter, water is an extremely available neutron moderator and is a very effective heat carrying fluid.
+For our simulated U235 neutron source water behaves like a neutron shield, abosrbing most of the neutrons emited with a transimission rate around $T=12.33\%$ and a volume $V\approx0.025m^3$ or $V\approx25L$. 
+Water thus requires relatively small volumes of water to shield effectively and reduce doses. 
+In addition to it's important shielding per cubic meter (keeping in mind shielding is also dependant of the geometry), water is an extremely available neutron moderator and is a very effective heat carrying fluid.
 
 This explains the use of light water in nuclear power production and waste managment plants.
 
