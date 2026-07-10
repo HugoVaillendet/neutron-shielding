@@ -15,7 +15,7 @@ Although previous work predates this article, the modern Markov Chain Monte Carl
 
 The program will have a main execution program and a module in a secondary file for neutron type as well as procedures.
 
-The project is compiled using GFortran and with the following flags : `gfortran  neutron.f90 main.f90 -O3 -march=native -ffast-math -funroll-loops -fopt-info-vec -o main.exe`.
+The project is compiled using GFortran and with the following flags : `gfortran utilities.f90 neutron.f90 main.f90 -O3 -march=native -ffast-math -funroll-loops -fopt-info-vec -fopenmp -o main.exe`.
 
 The project takes avantage of Fortran's ability to vectorize loops and use SIMD registers. Regarding my specific architecture
 AVX-256 registers are used by the program.
@@ -118,6 +118,10 @@ $$v' = \sqrt{1 - \mu_{lab}^2}\sin{\phi}$$
 
 $$w' = \mu_{lab}\\frac{w}{|w|}$$
 
+However this accounts for neutrons that would be thermaly at (meaning a temperature $T=0K$). 
+In reality a neutron that would have lost all it's velocity from the initial fission would still preserve and it's thermal excitation.
+As such we will consider, to simplify, that any neutron reaching that threshold (around $0.025eV$ for room temperature) is considered abosrbed.
+
 ### sample_direction()
 
 This function samples isotropicaly in spherical coordinates a random direction for the neutrons. 
@@ -156,11 +160,11 @@ Otherwise we do nothing.
 
 ## Results
 
-We simulate a U-235 fission source emitting isotropically $10^6$ neutrons. Everywhere around the source is a cylinder of light water of radius $R = 20$ and height $H = 40$.
+We simulate a U-235 fission source emitting isotropically $10^6$ neutrons. Everywhere around the source is a cylinder of light water of radius $R = 20$ and height $H = 20$.
 Our raw numerical results are the following :
 
-- Final transmission rate : $T = 12.339099999999998\%$
-- Final absorbtion rate : $A = 87.660899999999998\%$
+- Final transmission rate : $T = 0.86\\%$
+- Final absorbtion rate : $A = 99.14\\%$
 - Scattering events tally : $S = 60215158$
 
 The simulation took $5.2509999275207520s$.
@@ -171,10 +175,10 @@ We obtain the following distribution of scatters :
 
 ![Scatter distribution](/fig2.png)
 
-We observe an exponential distribution with a mean at $\langle n\rangle = 60.22$ and median $n_m = 47.00$. This means that $50\%$ of the neutrons experience $47$ or less scattering event before being either abosrbed or exitting.
+We observe a gaussian distribution with a mean at $\langle n\rangle = 18.35\\%$ and median $n_m = 18.00\\%$.
 
-For our simulated U235 neutron source water behaves like a neutron shield, abosrbing most of the neutrons emited with a transimission rate around $T=12.33\%$ and a volume $V\approx0.025m^3$ or $V\approx25L$. 
-Water thus requires relatively small volumes of water to shield effectively and reduce doses. 
+For our simulated U235 neutron source water behaves like a neutron shield, abosrbing almost all the neutrons emited with a transimission rate of $T=0.86\\%$ and a volume $V\approx0.025m^3$ or $V\approx25L$. 
+Water thus requires relatively small volumes of water to shield effectively and reduce doses drasitcally. 
 In addition to it's important shielding per cubic meter (keeping in mind shielding is also dependant of the geometry), water is an extremely available neutron moderator and is a very effective heat carrying fluid.
 
 This explains the use of light water in nuclear power production and waste managment plants.
