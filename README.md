@@ -165,9 +165,9 @@ Our raw numerical results are the following :
 
 - Final transmission rate : $T = 0.86\\%$
 - Final absorbtion rate : $A = 99.14\\%$
-- Scattering events tally : $S = 60215158$
+- Scattering events tally : $S = 18349642$
 
-The simulation took $5.2509999275207520s$.
+The simulation took $1.6970000267028809s$.
 
 ### Scatter distribution
 
