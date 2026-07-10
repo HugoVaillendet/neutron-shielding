@@ -118,9 +118,10 @@ $$v' = \sqrt{1 - \mu_{lab}^2}\sin{\phi}$$
 
 $$w' = \mu_{lab}\\frac{w}{|w|}$$
 
-However this accounts for neutrons that would be thermaly at (meaning a temperature $T=0K$). 
-In reality a neutron that would have lost all it's velocity from the initial fission would still preserve and it's thermal excitation.
-As such we will consider, to simplify, that any neutron reaching that threshold (around $0.025eV$ for room temperature) is considered abosrbed.
+In this model however we consider that the medium the neutron is interacting has no thermal energy. In reality the water has a non zero temperature (we'll consider room temperature or $T=293K$.
+This means that some of that thermal energy can at times be transfered to the neutrons upon scattering. 
+This process is called upscattering and means that neutrons in a real medium can't have a kinetic energy below a certain threshold. 
+Although a free gas model would most accurately simulate this behaviour, we will simplify it to an energy cutoff based on $E_{threshold} = k_BT = 0.025eV$.
 
 ### sample_direction()
 
@@ -160,14 +161,14 @@ Otherwise we do nothing.
 
 ## Results
 
-We simulate a U-235 fission source emitting isotropically $10^6$ neutrons. Everywhere around the source is a cylinder of light water of radius $R = 20$ and height $H = 20$.
+We simulate a U-235 fission source emitting isotropically $10^6$ neutrons. Everywhere around the source is a cylinder of light water of radius $R = 20cm$ and height $H = 40cm$.
 Our raw numerical results are the following :
 
 - Final transmission rate : $T = 0.86\\%$
 - Final absorbtion rate : $A = 99.14\\%$
 - Scattering events tally : $S = 18349642$
 
-The simulation took $1.6970000267028809s$.
+The simulation took $1.70s$.
 
 ### Scatter distribution
 
@@ -175,9 +176,9 @@ We obtain the following distribution of scatters :
 
 ![Scatter distribution](/fig2.png)
 
-We observe a gaussian distribution with a mean at $\langle n\rangle = 18.35\\%$ and median $n_m = 18.00\\%$.
+We observe a gaussian distribution with a mean at $\langle n\rangle = 18.35$ and median $n_m = 18.00$.
 
-For our simulated U235 neutron source water behaves like a neutron shield, abosrbing almost all the neutrons emited with a transimission rate of $T=0.86\\%$ and a volume $V\approx0.025m^3$ or $V\approx25L$. 
+For our simulated U235 neutron source water behaves like a neutron shield, abosrbing almost all the neutrons emited with a transimission rate of $T=0.86\\%$ and a volume $V\approx0.050m^3$ or $V\approx50L$. 
 Water thus requires relatively small volumes of water to shield effectively and reduce doses drasitcally. 
 In addition to it's important shielding per cubic meter (keeping in mind shielding is also dependant of the geometry), water is an extremely available neutron moderator and is a very effective heat carrying fluid.
 
