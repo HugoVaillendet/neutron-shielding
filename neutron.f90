@@ -2,7 +2,8 @@ module neutron_module
     use vector_module
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64         ! Allow float or double precision real
     implicit none
-    real(dp), parameter :: PI = 4.0_dp * atan(1.0_dp)
+    real(dp), parameter :: PI = 4.0_dp * atan(1.0_dp) 
+    real(dp), parameter :: E_thermal = 0.025_dp
 
     type :: neutron
         !SoA structure of position, velocity and energy
@@ -103,7 +104,7 @@ module neutron_module
                 y = -log(xi2)
 
                 if ((y - M * (x + 1.0_dp))**2 <= b * L * x) then
-                    sample_energy = L * x
+                    sample_energy = L * x * 1.0e6_dp
                     accept = .true.
                 else
                     accept = .false.
@@ -222,6 +223,10 @@ module neutron_module
 
             do while (active)
 
+                if (this%E(i) < E_thermal) then
+                    evaluate_step = 1
+                    return
+                end if
                 if (this%E(i) > 100.0e3_dp) then
                     regime = 1
                 else if (this%E(i) <= 100.0e3_dp .and. this%E(i) > 0.625_dp) then
