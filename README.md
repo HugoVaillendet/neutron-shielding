@@ -178,6 +178,37 @@ We obtain the following distribution of scatters :
 
 We observe a gaussian distribution with a mean at $\langle n\rangle = 18.35$ and median $n_m = 18.00$.
 
+### Escape neutrons energy distribution
+
+We obtain the following distribution of energy :
+
+![Escape energy distribution](/fig3.png)
+
+We observe that the majority of neutrons are inside the thermal and epithermal range with a median $E_m = 8.38eV$.
+
+### Scalability
+
+The source we initially picked emits $N=10^6$ neutrons which in the world of nuclear engineering and radiprotection is actually exceedingly small.
+However if we push to $N=10^8$ we hit a wall, that of memory availablility. My home computer despite having quite a lot of RAM available can only do so much before beeing out of memory.
+There are ways to solve this, both on the computer science side (batch computing, parallel distribution, etc...) or the mathematical side (variance reduction).
+
+However here we won't use any of this. Indeed the results from an MCMC method doesn't radically change the results, it impacts the variance $\sigma$, how confident we are in our results.
+We can see it by comparing results with $N=10^6$ and $N=10^7$ :
+
+| Observable  |    $N=10^6$   |    $N=10^7$   | 
+| ----------- | -----------   |  -----------  |
+| Transmision rate T                  | $0.86\\%$       | $0.86\\%$      | 
+| Absorbtion rate A                   | $99.14\\%$      | $99.14\\%$     |
+| Scatter mean $\langle n\rangle$     | $18.35$        | $18.35$   |
+| Scatter Median n_m                  | $18.00$        | $18.00$   |
+| Escape Energy Median                | $8.38eV$        | $8.06eV$   |
+
+Transimission, absorbtion, scatter mean and median are identical and the energy median has an $\epsilon = 3.81\\%$.
+
+So using the values from $N=10^7$, our most approachable method result here, we can extrabolate what the results would be for a much stronger source.
+
+## Conclusion
+
 For our simulated U235 neutron source water behaves like a neutron shield, abosrbing almost all the neutrons emited with a transimission rate of $T=0.86\\%$ and a volume $V\approx0.050m^3$ or $V\approx50L$. 
 Water thus requires relatively small volumes of water to shield effectively and reduce doses drasitcally. 
 In addition to it's important shielding per cubic meter (keeping in mind shielding is also dependant of the geometry), water is an extremely available neutron moderator and is a very effective heat carrying fluid.
