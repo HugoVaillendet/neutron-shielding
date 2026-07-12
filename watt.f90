@@ -8,7 +8,7 @@ program watt_spectrum
 
     real(dp), allocatable :: E(:)
 
-    n = 1000000
+    n = 10000000
 
     a = 0.988
     b = 2.249

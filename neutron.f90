@@ -10,7 +10,7 @@ module neutron_module
         real(dp), allocatable :: x(:), y(:), z(:), vx(:), vy(:), vz(:), E(:)
         !Tally of scatters for each neutron
         integer, allocatable :: scatter_tally(:)
-        type(vector_dp) :: fx, fy, fz
+        type(vector_dp) :: fx, fy, fz, fE
         !real(dp), allocatable :: fx(:), fy(:), fz(:)
 
         !Unit vector of speed and mass
@@ -57,6 +57,7 @@ module neutron_module
             call this%fx%init_vector()
             call this%fy%init_vector()
             call this%fz%init_vector()
+            call this%fE%init_vector()
 
             ! Allocates size.
             allocate(this%x(n), this%y(n), this%z(n), this%vx(n), this%vy(n), this%vz(n), this%E(n))
@@ -258,6 +259,7 @@ module neutron_module
                     call this%fx%push(this%x(i))
                     call this%fy%push(this%y(i))
                     call this%fz%push(this%z(i))
+                    call this%fE%push(this%E(i))
                     !$omp end critical
                     return
                 end if

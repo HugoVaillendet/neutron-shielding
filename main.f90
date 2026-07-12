@@ -68,7 +68,8 @@ program monte_carlo
 
     open(1, file = 'scatter_histogram.dat', status = 'replace')
     open(2, file = 'energy_histogram.dat', status = 'replace')    
-    open(3, file = 'final_positions.dat', status = 'replace') 
+    open(3, file = 'final_positions.dat', status = 'replace')
+    open(4, file = 'final_state.dat', status = 'replace')
     do i = 1, n  
         write(1,*) ntr%scatter_tally(i)  
         write(2,*) ntr%E(i)
@@ -76,6 +77,7 @@ program monte_carlo
 
     do i = 1, ntr%fx%size
         write(3,*) ntr%fx%at(i), ntr%fy%at(i), ntr%fz%at(i)
+        write(4,*) ntr%fx%at(i), ntr%fy%at(i), ntr%fz%at(i), ntr%fE%at(i)
     end do
     
     close(1)
